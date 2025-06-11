@@ -33,8 +33,8 @@ def overwrite(df_customer, company_name, layer_str):
 
 if __name__ == "__main__":
     # Get customer name and input file
-    #company_name = input('Enter the customer name: ')
-    company_name = 'christiana'
+    company_name = input('Enter the customer name: ')
+    #company_name = 'christiana'
     company_name = company_name.upper()
     input_file = filepaths.get_raw_filepath(company_name)
     # Read raw df
