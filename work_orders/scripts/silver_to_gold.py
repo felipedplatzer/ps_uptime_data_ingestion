@@ -1,10 +1,11 @@
 import pandas as pd
 from datetime import datetime
-import filepaths
+import settings
 
 
 def remove_ghost_assets(df):
-    asset_df = pd.read_csv(filepaths._asset_filepath)[['company_name','asset_sys_id']]
+    asset_filepath = settings.get_output_filepath('assets', 'gold')
+    asset_df = pd.read_csv(asset_filepath)[['company_name','asset_sys_id']]
     df = pd.merge(df, asset_df, on=['company_name','asset_sys_id'], how='inner')
     return df
 

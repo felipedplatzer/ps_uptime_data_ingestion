@@ -3,15 +3,17 @@ from datetime import datetime
 import settings
 
 
+
 def remove_ghost_items(df):
     if 'asset_sys_id' in list(df.columns):
-        asset_df = pd.read_csv(settings._asset_filepath)[['company_name','asset_sys_id']]
+        asset_filepath = settings.get_output_filepath('assets', 'gold')
+        asset_df = pd.read_csv(asset_filepath)[['company_name','asset_sys_id']]
         df = pd.merge(df, asset_df, on=['company_name','asset_sys_id'], how='inner')
     if 'work_order_id' in list(df.columns):
-        work_order_df = pd.read_csv(settings._work_order_filepath)[['company_name','work_order_id']]
+        work_order_filepath = settings.get_output_filepath('work_orders', 'gold')
+        work_order_df = pd.read_csv(work_order_filepath)[['company_name','work_order_id']]
         df = pd.merge(df, work_order_df, on=['company_name','work_order_id'], how='inner')
     return df
-
 
 
 def silver_to_gold(df):

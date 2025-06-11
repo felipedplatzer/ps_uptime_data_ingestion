@@ -1,1 +1,0 @@
-    df = df[(df['warranty_end_date'].isna()) | (df['warranty_end_date'] >= '1970-01-01')] 

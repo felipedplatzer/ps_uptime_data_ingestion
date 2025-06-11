@@ -1,5 +1,5 @@
-from raw_to_bronze import raw_to_bronze
-from bronze_to_silver import bronze_to_silver
+from assets.scripts.bronze_to_silver import raw_to_bronze
+from assets.scripts.bronze_to_silver import bronze_to_silver
 from silver_to_gold import silver_to_gold
 
 import filepaths

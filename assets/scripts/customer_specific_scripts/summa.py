@@ -1,19 +1,18 @@
 #Constants 
 _column_mapping_dict = {
-    "warranty_expiration": "warranty_end_date", 
-    "u_site": "building_name", 
-    "service_contract_cost": None, 
-    "serial_number": "serial_number", 
-    "u_region": "campus_name", 
-    "manufacture_date": None, 
-    "install_date": "in_service_date", 
-    "x_nuvo_sh_contract_end": None, 
-    "asset_type": "modality", 
-    "name": "model_number", 
-    "model_name": "model_name", 
-    "asset_manufacturer": "make", 
-    "acquisition_cost": "acquisition_cost", 
-    "acquisition_method": "acquisition_method"
+    "Contract": None, #Ask Sanaa / Derek
+    "Asset Tag": "asset_tag",
+    "Asset Type": "modality",
+    "Asset Model Name": "model_name", # could be model_number as well -> needs standardization
+    "Serial Number": "serial_number",
+    "Asset Manufacturer": "make",
+    "Owning Department": "department",
+    "Device Region": None,
+    "Device Campus": "campus_name",
+    "Device Building": "building_name",
+    "Device Floor": "floor_name",
+    "Installation Date": "in_service_date",
+    "Risk Score Level": "risk_score_level",
 }
 _primary_key = 'serial_number' #column that serves as primary key (choose a column wiht few duplicates)
 
@@ -36,8 +35,9 @@ def rename_cols(df):
 
 
 # Main
-def raw_to_bronze_christiana(df):
+def summa(df):
     df = rename_cols(df)
     df['asset_sys_id'] = df[_primary_key].apply(lambda x: create_id(x))
     return df
 
+# Missing standardization of risk score level!!

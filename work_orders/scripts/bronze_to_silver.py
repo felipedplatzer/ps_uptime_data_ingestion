@@ -1,23 +1,24 @@
 import pandas as pd
-import filepaths
-
-
-def standardize_field(field_name, silver_df):
-    if field_name in list(silver_df.columns):
-        filepath = filepaths.get_mapping_filepath(field_name)
-        map_df = pd.read_csv(filepath)
-        silver_df = silver_df.rename(columns = {field_name: field_name + '_source'})
-        silver_df = pd.merge(silver_df, map_df, on = ['company_name', field_name + '_source'], how = 'inner')
-    return silver_df
+import settings
+import all_datasets
 
 
 
-def bronze_to_silver(df):
+def bronze_to_silver(df, company_name):
+    # Customer-specific raw_to_bronze processing
+    if company_name == 'SUMMA':
+        #from work_orders.scripts.customer_specific_scripts.summa import summa
+        #df = summa(df)
+        pass
+    elif company_name == 'CHRISTIANA':
+        from work_orders.scripts.customer_specific_scripts.christiana import christiana
+        df = christiana(df) 
+
+    # Add company name
+    df['company_name'] = company_name.upper()
+
     # Remove all duplicate rows (i.e. rows with all attributes being equal)
-    if 'comments' in list(df.columns):
-        df['comments_str'] = df['comments'].astype(str) #workaround because it's not possible to use a dict in drop duplicates
-        df = df.drop_duplicates(subset = [x for x in list(df.columns) if x != 'comments'])
-        df = df.drop('comments_str', axis=1)
+    df = all_datasets.remove_duplicate_rows(df)
 
     # Remove rows with duplicate work order id (this work order id combines the original work order id and the asset id, so that work order id's that apply to multiple assets are valid)
     df = df.drop_duplicates(subset=['work_order_id'])
@@ -25,7 +26,7 @@ def bronze_to_silver(df):
     # Standardize fields
     std_fields = ['downtime_impact', 'work_order_status' ,'type'] # MISSING resolution and problem_cause, since these are not yet standardized on uptime
     for f in std_fields:
-        df = standardize_field(f, df)
+        df = all_datasets.standardize_field(df, f, 'work_orders')
 
 
     #Return

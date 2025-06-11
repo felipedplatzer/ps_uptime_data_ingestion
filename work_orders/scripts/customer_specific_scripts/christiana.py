@@ -41,7 +41,7 @@ def rename_cols(df):
 
 
 # Main
-def raw_to_bronze_christiana(df):
+def christiana(df):
     # Rename cols
     df = rename_cols(df)
     # Remove empty work order id's 
