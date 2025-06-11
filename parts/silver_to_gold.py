@@ -1,0 +1,48 @@
+import pandas as pd
+from datetime import datetime
+import settings
+
+
+def remove_ghost_items(df):
+    if 'asset_sys_id' in list(df.columns):
+        asset_df = pd.read_csv(settings._asset_filepath)[['company_name','asset_sys_id']]
+        df = pd.merge(df, asset_df, on=['company_name','asset_sys_id'], how='inner')
+    if 'work_order_id' in list(df.columns):
+        work_order_df = pd.read_csv(settings._work_order_filepath)[['company_name','work_order_id']]
+        df = pd.merge(df, work_order_df, on=['company_name','work_order_id'], how='inner')
+    return df
+
+
+
+def silver_to_gold(df):
+    # Remove work orders without work order ID and without asset id
+    if 'asset_sys_id' in list(df.columns):
+        df = df[(df['asset_sys_id'] != None) & (df['asset_sys_id'].str.strip() != '')]        
+    if 'work_order_id' in list(df.columns):
+        df = df[(df['work_order_id'] != None) & (df['work_order_id'].str.strip() != '')]
+    
+
+    # Remove rows with asset id not in asset table and work order id not in work order table
+    df = remove_ghost_items(df)
+
+    # Remove negative quantity, cost, or unit_cost
+    for x in ['cost','unit_cost','quantity']:
+        if x in list(df.columns):
+            df = df[(df[x].isna()) | (df[x] >= 0)]
+
+    # Calculate quantity, cost, or unit_cost if it's missing and the 2 other values are available
+    if 'quantity' not in list(df.columns) and 'cost' in list(df.columns) and 'unit_cost' in list(df.columns):
+        df['quantity'] = df['cost'] / df['unit_cost']
+        df['quantity'] = df['quantity'].round()
+    
+    if 'cost' not in list(df.columns) and 'quantity' in list(df.columns) and 'unit_cost' in list(df.columns):
+        df['cost'] = df['unit_cost'] * df['quantity']
+        df['cost'] = df['cost'].round(2)
+    
+    if 'unit_cost' not in list(df.columns) and 'quantity' in list(df.columns) and 'cost' in list(df.columns):
+        df['unit_cost'] = df['cost'] / df['quantity']
+        df['unit_cost'] = df['unit_cost'].round(2)
+
+    # Return
+    return df
+    
