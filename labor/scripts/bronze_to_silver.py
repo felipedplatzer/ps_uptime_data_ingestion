@@ -13,7 +13,18 @@ def bronze_to_silver(df, company_name):
     elif company_name == 'CHRISTIANA':
         from labor.scripts.customer_specific_scripts.christiana import christiana
         df = christiana(df) 
-
+    elif company_name == 'WAKEMED':
+        from labor.scripts.customer_specific_scripts.wakemed import wakemed
+        df = wakemed(df)
+    elif company_name == 'MARSHFIELD':
+        from labor.scripts.customer_specific_scripts.marshfield import marshfield
+        df = marshfield(df)
+    elif company_name == 'METHODIST':
+        from labor.scripts.customer_specific_scripts.methodist import methodist
+        df = methodist(df)
+    elif company_name == 'PIEDMONT':
+        from labor.scripts.customer_specific_scripts.piedmont import piedmont
+        df = piedmont(df)
     # Add company name
     df['company_name'] = company_name.upper()
 
@@ -23,6 +34,12 @@ def bronze_to_silver(df, company_name):
     # Remove rows with duplicate labor_sys_id
     df = df.drop_duplicates(subset=['labor_sys_id'])
 
+    # Convert date columns to datetime
+    date_columns = ['service_date']
+    for col in date_columns:
+        if col in list(df.columns):
+            df[col] = pd.to_datetime(df[col], errors='coerce')
+    
     # Handle cost conversion
     if 'cost' in df.columns:
         # Replace NULL values with NaN to preserve them
@@ -32,6 +49,8 @@ def bronze_to_silver(df, company_name):
             df['cost'].astype(str).str.replace('$', '').str.replace('(', '-').str.replace(')', ''),
             errors='coerce'
         )
+        # Round to 2 decimals
+        df['cost'] = df['cost'].round(2)
     
     # Handle duration conversion
     if 'duration' in df.columns:
@@ -48,10 +67,3 @@ def bronze_to_silver(df, company_name):
 
     #Return
     return df
-
-# MISSING: PARSE FIELDS! like resolution_detail
-# Remove "PM Annual - Next Scheduled Date: dd/mm/yyyy" from order_summary
-##"Remove dates and names from order_summary. Example (raw data): (TC 01/02/2018 02:01:24 PM, ZELLNER, JASON) 
-#"Remove dates from resolution_detail (example raw resolution_detail: MM-MIndray A5 training.-2019-05-13 13:15:08
-# Resolution not yet standardized in Uptime -> leave for later
-# Problem_cause not yet standardized in Uptime -> leave for later

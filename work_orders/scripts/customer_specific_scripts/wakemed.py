@@ -1,29 +1,32 @@
 #Constants 
 _column_mapping_dict = {
-    "number": "work_order_id",	
+    "number": "work_order_id",
+    "asset": "asset_sys_id",
+    "work_order_type": "type",
     "state": "work_order_status",
-    "short_description": "order_summary",
-    "sys_created_on": "reported_date",
-    "sys_updated_on": "sys_updated_on",	
-    "work_order_type": "type",	
-    "work_notes": "work_notes",
-    "u_substate": "work_order_substate",	
-    "resolved": None,	
-    "resolution_detail"	: "resolution_detail",
-    "resolution_code": "resolution",
     "reported_by": "REPORTED_BY",
+    "sys_created_on": "reported_date",
+    "substate": "work_order_substate",
+    "u_work_campus": None,
+    "u_work_building": None,
+    "resolved": "completed_date",
+    "resolution_detail": "resolution_detail",
+    "resolution_code": "resolution",
     "problem_cause": "problem_cause",
-    "description": None,	
-    "downtime_start": None,	
-    "downtime_end": None,	
-    "u_downtime_impact": "downtime_impact",	
-    "closed_at": "completed_date", # closed is not the same as completed. closed should only be the same as complet4ed for wo's with stauts = completed 
-    "assigned_to": "technician",	
-    "asset": "asset_sys_id",	
-    "comments": None 
+    "short_description": "problem",
+    "description": None,
+    "downtime_start": None,
+    "downtime_end": None,
+    "u_downtime_impact": None,
+    "contract": None,
+    "nuvolo_contract": None,
+    "closed_at": None,
+    "closed_by": None,
+    "assigned_to": "technician",
+    "asset_type": None
+
 }
 
-_primary_key = 'number' #column that serves as primary key (choose a column wiht few duplicates)
 
 
 # Import libraries
@@ -66,20 +69,16 @@ def parse_resolution_detail(df):
     return df
 
 
-def parse_work_notes(df):
-    # Remove the work notes prefix (yyyy-mm-dd hh:mm:ss - technician name (Work Notes))
-    df['work_notes'] = df['work_notes'].str.replace(r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - [A-Za-z]+ [A-Za-z]+ \(Work Notes\)', '', regex=True)
-    df['work_notes'] = df['work_notes'].str.strip()
-    return df    
-
+ 
 # Main
-def christiana(df):
-    # Parse work notes
-    df = parse_work_notes(df)
+def wakemed(df):
+
     # Rename cols
     df = rename_cols(df)
+
     # Remove empty work order id's 
-    df = df[(df['work_order_id'] != None) & (df['work_order_id'].str.strip() != '')]
+    df['work_order_id'] = df['work_order_id'].fillna('').astype(str)
+    df = df[(df['work_order_id'] != '')]
     # Fill na's in asset sys id
     df['asset_sys_id'] = df['asset_sys_id'].fillna('')
     #df['work_order_id'] = df['work_order_id'].astype(str) + '.' + df['asset_sys_id'].astype(str) 

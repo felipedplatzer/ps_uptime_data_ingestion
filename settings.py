@@ -85,6 +85,8 @@ _cols_to_keep_dict = {
         "reported_by_phone"
         # The following columns are not currently in uptime
         'comments',
+        'resolution_detail_source',
+        'order_summary_source'
     ],
     'labor': [    
         # The following columns are in uptime

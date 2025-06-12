@@ -1,17 +1,29 @@
 #Constants 
 _column_mapping_dict = {
-    "number": "labor_sys_id",
-    "work_order": "work_order_id",
-    "amount": "cost",
-    "sys_created_on": "service_date",
-    "work_duration": "duration",
-    "technician": "technician",
-    "summary": "summary",
-    "service_activity": None
+    "WO_NUMBER": "work_order_id",
+    "SEQUENCE": None,
+    "EMPLOYEE": "technician",
+    "RESPONSE": None,
+    "HOURS": "duration",
+    "ACTION": None,
+    "CHG_RATE": None,
+    "RATE_MULTI": None,
+    "WORK_TYPE": None,
+    "LABOR_TYPE": "labor_type",
+    "COSTING_TYPE": None,
+    "FACILITY": None,
+    "CONTRACT_RATE": None,
+    "BILLABLE": None,
+    "CHARGE": "cost",
+    "DONE_DATETIME": "service_date"
 }
 
-_primary_key = 'labor_sys_id' #column that serves as primary key (choose a column wiht few duplicates)
-_duration_denominator = 3600 #duration is stored in seconds for christiana -> need to divide by 3600
+# break down action into code and description
+
+_primary_key = '' #column that serves as primary key (choose a column wiht few duplicates)
+# create parimary key as wo_id + sequence
+
+_duration_denominator = 1 #duration is stored in seconds for christiana -> need to divide by 3600
 
 # Import libraries
 import pandas as pd
@@ -31,15 +43,15 @@ def rename_cols(df):
 
 
 # Main
-def christiana(df):
-    # Remove parts (keep only labor)
-    df = df[df['type'] == 'Labor']
+def piedmont(df):
+    # Create primary key
+    df['labor_sys_id'] = df['WO_NUMBER'].astype(str) + '.' + df['SEQUENCE'].astype(str)
     # Rename cols
     df = rename_cols(df)
     # Remove empty work order id's 
     df = df[(df['labor_sys_id'] != None) & (df['labor_sys_id'].str.strip() != '')]
     # Fill na's in asset sys id
-    df['work_order_id'] = df['work_order_id'].fillna('')
+    df['work_order_id'] = df['work_order_id'].fillna('').astype(str)
     # Convert duration to hours 
     df['duration'] = pd.to_numeric(df['duration'], errors='coerce')
     df['duration'] = df['duration'] / _duration_denominator

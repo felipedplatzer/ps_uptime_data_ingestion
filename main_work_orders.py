@@ -20,7 +20,7 @@ if __name__ == "__main__":
         print(f'Raw file not found for {company_name}')
     else:
         print(f'# of raw records: {str(len(df))}')
-
+        
         # Transform bronze to silver data
         df = bronze_to_silver(df, company_name)
         df = df[[x for x in list(df.columns) if x in settings._cols_to_keep_dict['work_orders']]] # Overwrite existing assets of customer (silver layer)

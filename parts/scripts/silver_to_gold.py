@@ -32,18 +32,6 @@ def silver_to_gold(df):
         if x in list(df.columns):
             df = df[(df[x].isna()) | (df[x] >= 0)]
 
-    # Calculate quantity, cost, or unit_cost if it's missing and the 2 other values are available
-    if 'quantity' not in list(df.columns) and 'cost' in list(df.columns) and 'unit_cost' in list(df.columns):
-        df['quantity'] = df['cost'] / df['unit_cost']
-        df['quantity'] = df['quantity'].round()
-    
-    if 'cost' not in list(df.columns) and 'quantity' in list(df.columns) and 'unit_cost' in list(df.columns):
-        df['cost'] = df['unit_cost'] * df['quantity']
-        df['cost'] = df['cost'].round(2)
-    
-    if 'unit_cost' not in list(df.columns) and 'quantity' in list(df.columns) and 'cost' in list(df.columns):
-        df['unit_cost'] = df['cost'] / df['quantity']
-        df['unit_cost'] = df['unit_cost'].round(2)
 
     # Return
     return df

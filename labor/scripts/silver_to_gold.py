@@ -22,13 +22,8 @@ def silver_to_gold(df):
         df = df[(df['asset_sys_id'] != None) & (df['asset_sys_id'].str.strip() != '')]        
     if 'work_order_id' in list(df.columns):
         df = df[(df['work_order_id'] != None) & (df['work_order_id'].str.strip() != '')]
-    # Convert date columns to datetime
-    date_columns = ['service_date']
-    for col in date_columns:
-        if col in list(df.columns):
-            df[col] = pd.to_datetime(df[col], errors='coerce')
-    
 
+    
     # Remove rows with asset id not in asset table and work order id not in work order table
     df = remove_ghost_items(df)
 

@@ -1,17 +1,20 @@
 #Constants 
 _column_mapping_dict = {
-    "number": "labor_sys_id",
-    "work_order": "work_order_id",
+    "number": "parts_sys_id",
     "amount": "cost",
-    "sys_created_on": "service_date",
-    "work_duration": "duration",
-    "technician": "technician",
-    "summary": "summary",
+    "summary": None,
+    "work_duration": None,
+    "type": None,
+    "technician": None,
+    "work_order": "work_order_id",
+    "inventoried_part": "inventoried_part",
+    "part_description": "part_description",
+    "parts": "part_number",
+    "price_per_unit": "unit_cost",
+    "quantity": "quantity",
     "service_activity": None
 }
 
-_primary_key = 'labor_sys_id' #column that serves as primary key (choose a column wiht few duplicates)
-_duration_denominator = 3600 #duration is stored in seconds for christiana -> need to divide by 3600
 
 # Import libraries
 import pandas as pd
@@ -28,23 +31,14 @@ def rename_cols(df):
 
     #Convert duration fields to hours (Christiana and Wakemed record duration in seconds. Piedmont, Marshfield, and Methodist record duration in hours)
 
-
-
 # Main
-def christiana(df):
+def wakemed(df):
     # Remove parts (keep only labor)
-    df = df[df['type'] == 'Labor']
+    df = df[df['type'] == 'Parts']
     # Rename cols
     df = rename_cols(df)
     # Remove empty work order id's 
-    df = df[(df['labor_sys_id'] != None) & (df['labor_sys_id'].str.strip() != '')]
+    df = df[(df['parts_sys_id'] != None) & (df['parts_sys_id'].str.strip() != '')]
     # Fill na's in asset sys id
     df['work_order_id'] = df['work_order_id'].fillna('')
-    # Convert duration to hours 
-    df['duration'] = pd.to_numeric(df['duration'], errors='coerce')
-    df['duration'] = df['duration'] / _duration_denominator
-
-
     return df
-
-    # IN OTHER CUSTOMERS, PARSE SUMMARY FIELD
